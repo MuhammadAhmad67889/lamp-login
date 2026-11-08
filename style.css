@@ -1,0 +1,378 @@
+/* Lamp Login — one accent colour runs the whole scene.
+   Change --accent and the light, the bulb and the form follow. */
+:root {
+  --accent: #f0a832; /* warm yellow, the first light colour */
+  --room-bg: #0e1216;
+  --card-bg: #182420;
+  --card-line: rgba(255, 255, 255, 0.09);
+  --text: #f2f0ea;
+  --muted: #9aa39d;
+  --field-bg: #101815;
+  --field-line: rgba(255, 255, 255, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--room-bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* The room: lamp on the left, card on the right. */
+.room {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+/* Soft light spilling on the wall behind the lamp. */
+.wall-glow {
+  position: absolute;
+  top: 4%;
+  left: -6%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(circle at 38% 32%, var(--accent), transparent 62%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- The lamp ---------- */
+
+.lamp-scene {
+  position: relative;
+  width: min(360px, 90vw);
+  flex-shrink: 0;
+}
+
+.lamp-scene svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lamp-hint {
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6d7680;
+}
+
+#cord:focus-visible,
+#shadeGroup:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+/* ---------- The card ---------- */
+
+/* Hidden while the lamp is off: invisible and not clickable. */
+.card {
+  position: relative;
+  width: min(350px, 92vw);
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-line);
+  border-radius: 18px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(24px);
+  pointer-events: none;
+}
+
+.card.on {
+  pointer-events: auto;
+}
+
+.sparkle {
+  position: absolute;
+  top: 1.4rem;
+  right: 1.5rem;
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.card h1 {
+  margin: 0.5rem 0 0.25rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.1rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.card-sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  border-bottom: 1px solid var(--card-line);
+}
+
+.tab {
+  padding: 0 0 0.55rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font: inherit;
+  font-size: 0.88rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+form {
+  margin-top: 1.1rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.field-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 1rem;
+}
+
+.field-label-row .field-label {
+  margin-top: 0;
+}
+
+.link {
+  padding: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.45rem;
+  padding: 0 0.75rem;
+  background: var(--field-bg);
+  border: 1px solid var(--field-line);
+  border-radius: 9px;
+}
+
+.field:focus-within {
+  border-color: var(--accent);
+}
+
+.field-icon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0;
+  background: none;
+  border: none;
+  outline: none;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.field input::placeholder {
+  color: #6d7680;
+}
+
+.eye {
+  display: flex;
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.eye:hover {
+  color: var(--text);
+}
+
+.eye svg {
+  width: 18px;
+  height: 18px;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.remember input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.submit {
+  width: 100%;
+  margin-top: 1.1rem;
+  padding: 0.8rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: #1c1c1c;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.submit:hover {
+  filter: brightness(1.08);
+}
+
+.submit:active {
+  transform: scale(0.98);
+}
+
+.submit:focus-visible,
+.tab:focus-visible,
+.link:focus-visible,
+.social:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.demo-note {
+  margin: 0.7rem 0 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0.9rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--card-line);
+}
+
+.social-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.social {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0;
+  background: var(--field-bg);
+  border: 1px solid var(--field-line);
+  border-radius: 9px;
+  color: #e8e6e1;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.social:hover {
+  border-color: var(--accent);
+}
+
+.social svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* ---------- Phone: lamp above, card below ---------- */
+
+@media (max-width: 720px) {
+  .room {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.25rem 1rem 2.5rem;
+    justify-content: flex-start;
+  }
+
+  .lamp-scene {
+    width: min(300px, 86vw);
+  }
+
+  .wall-glow {
+    left: 0;
+    width: 100%;
+    height: 55%;
+  }
+
+  .card {
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lamp Login — pull the cord, light the room</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="room" id="room">
+    <!-- Soft light spilling on the wall behind the lamp. -->
+    <div class="wall-glow" aria-hidden="true"></div>
+
+    <!-- The lamp. Drawn as SVG so every part can move on its own. -->
+    <section class="lamp-scene" aria-label="Desk lamp">
+      <svg id="lamp" viewBox="0 0 360 460" role="group" aria-label="Articulated desk lamp">
+        <defs>
+          <!-- The cone of light falling from the shade to the floor. -->
+          <linearGradient id="coneGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style="stop-color: var(--accent)" stop-opacity="0.5" />
+            <stop offset="1" style="stop-color: var(--accent)" stop-opacity="0" />
+          </linearGradient>
+          <!-- The glow of the bulb itself. -->
+          <radialGradient id="bulbGrad" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" style="stop-color: var(--accent)" stop-opacity="0.9" />
+            <stop offset="1" style="stop-color: var(--accent)" stop-opacity="0" />
+          </radialGradient>
+          <!-- The inside of the shade: dark when off, lit when on. -->
+          <radialGradient id="mouthGrad" cx="0.5" cy="0.5" r="0.65">
+            <stop id="mouthHot" offset="0" style="stop-color: var(--accent)" stop-opacity="0" />
+            <stop offset="0.7" style="stop-color: #8a6a2f" stop-opacity="1" />
+            <stop offset="1" style="stop-color: #3a2f18" stop-opacity="1" />
+          </radialGradient>
+          <linearGradient id="domeGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#33383e" />
+            <stop offset="0.55" stop-color="#1d2024" />
+            <stop offset="1" stop-color="#101215" />
+          </linearGradient>
+          <linearGradient id="brassGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e8c877" />
+            <stop offset="0.5" stop-color="#b98f3e" />
+            <stop offset="1" stop-color="#8a6a2a" />
+          </linearGradient>
+          <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="12" />
+          </filter>
+          <filter id="softSmall" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="5" />
+          </filter>
+        </defs>
+
+        <!-- Floor shadow under the base. -->
+        <ellipse cx="180" cy="432" rx="96" ry="13" fill="#000" opacity="0.55" />
+
+        <!-- The cone of light. It lives behind the arms, in front of the wall. -->
+        <polygon id="lightCone" points="186,198 260,178 332,434 108,434"
+                 fill="url(#coneGrad)" filter="url(#soft)" opacity="0" />
+
+        <!-- Lower arm: base joint up to the elbow. -->
+        <line x1="180" y1="404" x2="140" y2="286" stroke="#22262b" stroke-width="10" stroke-linecap="round" />
+        <line x1="180" y1="404" x2="140" y2="286" stroke="#3a4046" stroke-width="3" stroke-linecap="round" />
+
+        <!-- Upper arm: elbow up to the head joint. -->
+        <line x1="140" y1="286" x2="205" y2="166" stroke="#22262b" stroke-width="10" stroke-linecap="round" />
+        <line x1="140" y1="286" x2="205" y2="166" stroke="#3a4046" stroke-width="3" stroke-linecap="round" />
+
+        <!-- Round base. -->
+        <ellipse cx="180" cy="424" rx="72" ry="14" fill="#14161a" />
+        <ellipse cx="180" cy="419" rx="60" ry="10" fill="#202329" />
+        <ellipse cx="180" cy="417" rx="44" ry="6" fill="#2a2e33" opacity="0.7" />
+
+        <!-- Brass joints. -->
+        <circle cx="180" cy="406" r="12" fill="url(#brassGrad)" />
+        <circle cx="180" cy="406" r="5" fill="#2a2113" />
+        <circle cx="140" cy="286" r="12" fill="url(#brassGrad)" />
+        <circle cx="140" cy="286" r="5" fill="#2a2113" />
+
+        <!-- The shade. It rotates a little when the lamp turns on,
+             around the head joint, so it needs its own group. -->
+        <g id="shadeGroup" transform="translate(205 165) rotate(-30)" style="cursor: pointer"
+           tabindex="0" role="button" aria-label="Change the light colour">
+          <title>Click to change the light colour</title>
+          <!-- Dome -->
+          <path d="M -72 18 C -72 -48 -38 -80 0 -80 C 38 -80 72 -48 72 18 Z"
+                fill="url(#domeGrad)" />
+          <!-- A faint highlight along the top of the dome. -->
+          <path d="M -58 -8 C -52 -52 -24 -70 0 -70" fill="none"
+                stroke="#4a5058" stroke-width="3" stroke-linecap="round" opacity="0.6" />
+          <!-- The mouth of the shade, with its gold rim. -->
+          <ellipse cx="0" cy="18" rx="72" ry="13" fill="url(#mouthGrad)"
+                   stroke="#c9a24b" stroke-width="2.5" />
+          <!-- The bulb, hanging just under the mouth. -->
+          <circle id="bulbGlow" cx="0" cy="34" r="30" fill="url(#bulbGrad)" opacity="0" />
+          <circle id="bulb" cx="0" cy="32" r="10" fill="#3a3a3a" />
+          <!-- The head joint, drawn here so it turns with the shade. -->
+          <circle cx="0" cy="0" r="11" fill="url(#brassGrad)" />
+          <circle cx="0" cy="0" r="4.5" fill="#2a2113" />
+        </g>
+
+        <!-- The pull cord. It hangs on its own so it can be dragged
+             down and spring back without moving the shade. -->
+        <g id="cord" style="cursor: grab" tabindex="0" role="button"
+           aria-label="Pull the cord to turn the lamp on or off">
+          <title>Pull to turn the lamp on or off</title>
+          <circle cx="238" cy="180" r="4" fill="url(#brassGrad)" />
+          <line x1="238" y1="182" x2="238" y2="284" stroke="#d8c08a" stroke-width="2" />
+          <circle id="cordHandle" cx="238" cy="292" r="9" fill="url(#brassGrad)" />
+          <circle cx="238" cy="292" r="3.5" fill="#2a2113" />
+        </g>
+
+        <!-- "Pull to turn on" hint, shown until the first pull. -->
+        <g id="tooltip">
+          <rect x="256" y="272" width="92" height="26" rx="7"
+                fill="#20262d" stroke="#3a444e" stroke-width="1" />
+          <text x="266" y="289" fill="#d5dce2" font-size="12.5"
+                font-family="system-ui, sans-serif">Pull to turn on</text>
+        </g>
+      </svg>
+      <p class="lamp-hint">Pull the cord to switch the lamp &middot; click the shade to change its colour</p>
+    </section>
+
+    <!-- The login card. Hidden until the lamp is on. -->
+    <section class="card" id="card" aria-label="Sign in">
+      <span class="sparkle" aria-hidden="true">&#10022;</span>
+      <p class="eyebrow">Your Space</p>
+      <h1 id="cardTitle">Welcome</h1>
+      <p class="card-sub" id="cardSub">Sign in to continue to your account</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" id="tabSignIn" type="button" role="tab" aria-selected="true">Sign In</button>
+        <button class="tab" id="tabSignUp" type="button" role="tab" aria-selected="false">Sign Up</button>
+      </div>
+
+      <form id="authForm" novalidate>
+        <label class="field-label" for="username">Username or Email</label>
+        <div class="field">
+          <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+          <input id="username" name="username" type="text" placeholder="Enter username or email" autocomplete="username" />
+        </div>
+
+        <div class="field-label-row">
+          <label class="field-label" for="password">Password</label>
+          <button class="link" id="forgotLink" type="button">Forgot?</button>
+        </div>
+        <div class="field">
+          <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8" />
+          </svg>
+          <input id="password" name="password" type="password" placeholder="Enter password" autocomplete="current-password" />
+          <button class="eye" id="eyeButton" type="button" aria-label="Show password">
+            <svg id="eyeOpen" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" fill="none" stroke="currentColor" stroke-width="1.8" />
+              <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8" />
+            </svg>
+            <svg id="eyeClosed" viewBox="0 0 24 24" aria-hidden="true" style="display: none">
+              <path d="M4 4l16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              <path d="M2 12s3.5-6 10-6c2 0 3.7.6 5.2 1.4M22 12s-3.5 6-10 6c-2 0-3.7-.6-5.2-1.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <label class="remember">
+          <input type="checkbox" id="remember" checked />
+          <span>Remember me</span>
+        </label>
+
+        <button class="submit" id="submitButton" type="submit">Sign In &rarr;</button>
+        <p class="demo-note" id="demoNote" hidden>Demo only &mdash; no account is created.</p>
+
+        <div class="divider"><span>Or continue with</span></div>
+        <div class="social-row">
+          <button class="social" type="button" aria-label="Continue with Google">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.3h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.2-2.1 3.7-5.1 3.7-8.8Z" />
+              <path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-6-2.2-7-5.1L1.2 17.2C3.2 21.2 7.3 24 12 24Z" />
+              <path fill="#FBBC05" d="M5 14.3c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.2 6.8C.4 8.4 0 10.1 0 12s.4 3.6 1.2 5.2L5 14.3Z" />
+              <path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4l3.3-3.2C17.9 1.1 15.2 0 12 0 7.3 0 3.2 2.8 1.2 6.8L5 9.7c1-2.9 3.8-5 7-5Z" />
+            </svg>
+          </button>
+          <button class="social" type="button" aria-label="Continue with GitHub">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.4-3.4-1.4-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.2-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.4.1 2.6.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" />
+            </svg>
+          </button>
+          <button class="social" type="button" aria-label="Continue with Apple">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.9-1.6 0-3.1 1-4 2.4-1.7 2.9-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.7-3.7ZM14 4.6c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.8-1.4Z" />
+            </svg>
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
